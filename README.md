@@ -10,8 +10,9 @@ A modern Python web application that analyzes airline booking market demand tren
 - **Market Intelligence**: Route popularity, pricing trends, demand patterns
 - **Filtering & Visualization**: Dynamic charts and tables
 
-## 🛠 Quick Setup
+## � Quick Setup
 
+### **Local Development:**
 1. **Install Dependencies**:
 ```bash
 pip install -r requirements.txt
@@ -29,6 +30,27 @@ python app.py
 ```
 
 4. **Open Browser**: Navigate to `http://localhost:5000`
+
+### **🌐 Deploy to Production:**
+
+#### **Render (Recommended - FREE):**
+1. Fork this repo on GitHub
+2. Connect to [render.com](https://render.com)
+3. Create new "Web Service" from GitHub repo
+4. Render auto-detects settings from `render.yaml`
+5. Deploy! ✨
+
+#### **Heroku:**
+1. Install Heroku CLI
+2. `heroku create your-app-name`
+3. `git push heroku main`
+4. `heroku open`
+
+#### **Railway/Vercel:**
+- Files included: `Procfile`, `runtime.txt`
+- Just connect your GitHub repo and deploy!
+
+**Note**: App binds to `0.0.0.0` and uses `PORT` environment variable for proper deployment.
 
 ## 📊 Dashboard Features
 
