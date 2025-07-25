@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Demand Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-plane text-blue-600"></i> Airline Demand Insights
+            </h1>
+            <p class="text-gray-600">Real-time market analysis for Australian airline routes</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Route Filter</label>
+                    <select id="routeFilter" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Routes</option>
+                        <option value="SYD-MEL">Sydney to Melbourne</option>
+                        <option value="MEL-BNE">Melbourne to Brisbane</option>
+                        <option value="SYD-PER">Sydney to Perth</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Min Demand %</label>
+                    <input type="range" id="demandFilter" min="0" max="100" value="0" 
+                           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <span id="demandValue" class="text-sm text-gray-500">0%</span>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="loadData()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors w-full">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg">
+                <i class="fas fa-spinner fa-spin fa-2x text-blue-600"></i>
+                <p class="mt-2 text-gray-700">Loading insights...</p>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Charts Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Demand Chart -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-chart-line text-green-600"></i> Route Demand Analysis
+                    </h3>
+                    <canvas id="demandChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Price Trends -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-dollar-sign text-yellow-600"></i> 30-Day Booking Trends
+                    </h3>
+                    <canvas id="trendChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Routes Table -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-route text-purple-600"></i> Popular Routes
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left">Route</th>
+                                    <th class="px-4 py-2 text-left">Price (AUD)</th>
+                                    <th class="px-4 py-2 text-left">Demand</th>
+                                    <th class="px-4 py-2 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="routesTable" class="divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Sidebar -->
+            <div class="space-y-6">
+                <!-- AI Insights -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-brain text-pink-600"></i> AI Insights
+                    </h3>
+                    <div id="insights" class="text-gray-700 text-sm leading-relaxed">
+                        Click "Refresh Data" to get AI-powered insights...
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-chart-bar text-red-600"></i> Live Metrics
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">🛩️ Live Flights</span>
+                            <span id="liveFlights" class="font-semibold text-red-600">--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Avg Demand</span>
+                            <span id="avgDemand" class="font-semibold text-blue-600">--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Top Route</span>
+                            <span id="topRoute" class="font-semibold text-green-600">--</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Avg Price</span>
+                            <span id="avgPrice" class="font-semibold text-yellow-600">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Status -->
+                <div class="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-lg p-6 text-white">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-satellite-dish"></i> OpenSky Network
+                    </h3>
+                    <p class="text-sm opacity-90">Data Source: <span id="dataSource">OpenSky Network (Live)</span></p>
+                    <p class="text-sm opacity-90">Last updated: <span id="lastUpdate">Never</span></p>
+                    <div class="mt-3 flex items-center">
+                        <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse mr-2"></div>
+                        <span class="text-sm">Live Flight Tracking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let demandChart, trendChart;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadData();
+        });
+        
+        function setupEventListeners() {
+            const demandFilter = document.getElementById('demandFilter');
+            const demandValue = document.getElementById('demandValue');
+            
+            demandFilter.addEventListener('input', function() {
+                demandValue.textContent = this.value + '%';
+            });
+            
+            document.getElementById('routeFilter').addEventListener('change', filterRoutes);
+            demandFilter.addEventListener('change', filterRoutes);
+        }
+        
+        async function loadData() {
+            showLoading(true);
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                
+                updateCharts(data);
+                updateTable(data.routes);
+                updateInsights(data.insights);
+                updateMetrics(data.routes, data);
+                
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function updateCharts(data) {
+            // Demand Chart
+            const ctx1 = document.getElementById('demandChart').getContext('2d');
+            if (demandChart) demandChart.destroy();
+            
+            demandChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: data.routes.map(r => `${r.departure}-${r.arrival}`),
+                    datasets: [{
+                        label: 'Demand %',
+                        data: data.routes.map(r => r.demand),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+            
+            // Trend Chart
+            const ctx2 = document.getElementById('trendChart').getContext('2d');
+            if (trendChart) trendChart.destroy();
+            
+            trendChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: data.time_series.map(d => new Date(d.date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Daily Bookings',
+                        data: data.time_series.map(d => d.bookings),
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        function updateTable(routes) {
+            const tbody = document.getElementById('routesTable');
+            tbody.innerHTML = routes.map(route => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 font-medium">${route.departure} → ${route.arrival}</td>
+                    <td class="px-4 py-2">$${route.price}</td>
+                    <td class="px-4 py-2">
+                        <div class="flex items-center">
+                            <div class="w-12 bg-gray-200 rounded-full h-2 mr-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${route.demand}%"></div>
+                            </div>
+                            ${route.demand}%
+                        </div>
+                    </td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 text-xs rounded-full ${route.demand > 80 ? 'bg-red-100 text-red-800' : route.demand > 60 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                            ${route.demand > 80 ? 'High' : route.demand > 60 ? 'Medium' : 'Low'}
+                        </span>
+                        ${route.flights_detected ? `<br><small class="text-gray-500">📡 ${route.flights_detected} detected</small>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function updateInsights(insights) {
+            document.getElementById('insights').innerHTML = insights.replace(/\n/g, '<br>');
+        }
+        
+        function updateMetrics(routes, data) {
+            const avgDemand = Math.round(routes.reduce((sum, r) => sum + r.demand, 0) / routes.length);
+            const topRoute = routes.reduce((max, r) => r.demand > max.demand ? r : max);
+            const avgPrice = Math.round(routes.reduce((sum, r) => sum + r.price, 0) / routes.length);
+            
+            document.getElementById('liveFlights').textContent = data.live_flights || '--';
+            document.getElementById('avgDemand').textContent = avgDemand + '%';
+            document.getElementById('topRoute').textContent = `${topRoute.departure}-${topRoute.arrival}`;
+            document.getElementById('avgPrice').textContent = '$' + avgPrice;
+            
+            if (data.data_source) {
+                document.getElementById('dataSource').textContent = data.data_source;
+            }
+        }
+        
+        async function filterRoutes() {
+            const route = document.getElementById('routeFilter').value;
+            const minDemand = document.getElementById('demandFilter').value;
+            
+            try {
+                const response = await fetch(`/api/filter?route=${route}&min_demand=${minDemand}`);
+                const data = await response.json();
+                updateTable(data.routes);
+            } catch (error) {
+                console.error('Error filtering data:', error);
+            }
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
+        }
+    </script>
+</body>
+</html>
