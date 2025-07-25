@@ -1,13 +1,13 @@
-# Airline Booking Market Demand Analytics
+# Indian Aviation Market Demand Analytics
 
-A modern Python web application that analyzes airline booking market demand trends for Australian routes using real-time data and AI-powered insights.
+A modern Python web application that analyzes airline booking market demand trends for Indian domestic routes using real-time data and AI-powered insights.
 
 ## 🚀 Features
 
-- **Real-time Data Analysis**: Fetches live airline booking data
-- **AI-Powered Insights**: Uses OpenRouter API for intelligent trend analysis  
+- **Real-time Data Analysis**: Fetches live airline booking data over Indian airspace
+- **AI-Powered Insights**: Uses multiple free APIs for intelligent trend analysis  
 - **Interactive Dashboard**: Beautiful, responsive web interface
-- **Market Intelligence**: Route popularity, pricing trends, demand patterns
+- **Market Intelligence**: Route popularity, pricing trends, demand patterns for Indian routes
 - **Filtering & Visualization**: Dynamic charts and tables
 
 ## � Quick Setup
@@ -63,27 +63,32 @@ python app.py
 ## 🔧 API Integration
 
 ### Free APIs Used:
-- **OpenSky Network**: **100% FREE** real-time flight data (no registration needed!)
+- **OpenSky Network**: **100% FREE** real-time flight data over Indian airspace (no registration needed!)
+- **Hugging Face**: Free AI inference API for market insights
+- **Ollama**: Local AI integration (optional)
 - **OpenRouter**: AI analysis (free models available, optional)
 
 ### ✨ No Credit Card Required:
 OpenSky Network provides completely free access to live flight tracking data with no API key needed!
 
+### 🤖 Real AI Insights:
+The app tries multiple free AI services to provide genuine market analysis, not just mock data.
+
 ## 💡 Key Insights Provided
 
-- Most popular flight routes
-- Price volatility analysis  
-- Peak demand periods
-- Route profitability indicators
-- Seasonal booking trends
+- Most popular Indian domestic flight routes (DEL-BOM, BOM-BLR, etc.)
+- Price volatility analysis in INR
+- Peak demand periods and business travel patterns
+- Route profitability indicators for Indian market
+- Seasonal booking trends and festival impact
 
 ## 🎯 Business Value
 
 Perfect for:
-- **Travel Agencies**: Market demand analysis
-- **Airlines**: Route optimization  
-- **Hospitels**: Understanding traveler patterns
-- **Investors**: Aviation industry insights
+- **Travel Agencies**: Indian market demand analysis
+- **Airlines**: Route optimization for domestic Indian routes
+- **Hospitels**: Understanding traveler patterns across India
+- **Investors**: Indian aviation industry insights
 
 ## 🏗 Technical Stack
 

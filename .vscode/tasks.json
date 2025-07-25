@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"command": "python app.py",
+			"group": "build",
+			"isBackground": true,
+			"label": "Indian Aviation Analytics",
+			"problemMatcher": [],
+			"type": "shell"
+		}
+	]
+}

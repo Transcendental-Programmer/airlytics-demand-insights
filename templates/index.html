@@ -13,9 +13,9 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                <i class="fas fa-plane text-blue-600"></i> Airline Demand Insights
+                <i class="fas fa-plane text-blue-600"></i> Indian Aviation Insights
             </h1>
-            <p class="text-gray-600">Real-time market analysis for Australian airline routes</p>
+            <p class="text-gray-600">Real-time market analysis for Indian domestic airline routes</p>
         </div>
 
         <!-- Controls -->
@@ -25,9 +25,11 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Route Filter</label>
                     <select id="routeFilter" class="w-full border border-gray-300 rounded-md px-3 py-2">
                         <option value="">All Routes</option>
-                        <option value="SYD-MEL">Sydney to Melbourne</option>
-                        <option value="MEL-BNE">Melbourne to Brisbane</option>
-                        <option value="SYD-PER">Sydney to Perth</option>
+                        <option value="DEL-BOM">Delhi to Mumbai</option>
+                        <option value="BOM-BLR">Mumbai to Bangalore</option>
+                        <option value="DEL-BLR">Delhi to Bangalore</option>
+                        <option value="BOM-MAA">Mumbai to Chennai</option>
+                        <option value="BLR-HYD">Bangalore to Hyderabad</option>
                     </select>
                 </div>
                 <div>
@@ -83,7 +85,7 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-4 py-2 text-left">Route</th>
-                                    <th class="px-4 py-2 text-left">Price (AUD)</th>
+                                    <th class="px-4 py-2 text-left">Price (INR)</th>
                                     <th class="px-4 py-2 text-left">Demand</th>
                                     <th class="px-4 py-2 text-left">Status</th>
                                 </tr>
@@ -244,7 +246,7 @@
             tbody.innerHTML = routes.map(route => `
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-2 font-medium">${route.departure} → ${route.arrival}</td>
-                    <td class="px-4 py-2">$${route.price}</td>
+                    <td class="px-4 py-2">₹${route.price}</td>
                     <td class="px-4 py-2">
                         <div class="flex items-center">
                             <div class="w-12 bg-gray-200 rounded-full h-2 mr-2">
@@ -275,7 +277,7 @@
             document.getElementById('liveFlights').textContent = data.live_flights || '--';
             document.getElementById('avgDemand').textContent = avgDemand + '%';
             document.getElementById('topRoute').textContent = `${topRoute.departure}-${topRoute.arrival}`;
-            document.getElementById('avgPrice').textContent = '$' + avgPrice;
+            document.getElementById('avgPrice').textContent = '₹' + avgPrice;
             
             if (data.data_source) {
                 document.getElementById('dataSource').textContent = data.data_source;
